@@ -1,38 +1,27 @@
-# GitHub → GitLab → Toolforge deployment runbook
+# GitHub → Toolforge deployment runbook
 
-srwiki deploys to Wikimedia Toolforge via **Build Service** (a git push,
-mirrored to GitLab, triggers an automatic container build) -- the same
-pipeline `wikiwhiz`/`duga` use, replacing the tool's previous `python2`
-webservice type (deprecated, and the direct cause of `portali`/`catuse`
-being broken -- see `README.md`).
+srwiki deploys to Wikimedia Toolforge via **Build Service**, replacing the
+tool's previous `python2` webservice type (deprecated, and the direct cause
+of `portali`/`catuse` being broken -- see `README.md`).
 
-Unlike those two, this app needs the webservice's **NFS mount kept on**
-(`--mount=all`, not `--mount=none`): it reads
-`/data/project/srwiki/replica.my.cnf` for wikireplica credentials, and it
-serves `/data/project/srwiki/public_html/brojclanaka` live at
-`/brojclanaka` -- a file the unrelated, still-running `brcl` Toolforge job
-appends to every night. Never copy that file into the repo; it must stay
-read live off NFS or `/brojclanaka` goes stale the day after every deploy.
+`wikiwhiz`/`duga` mirror GitHub to a GitLab repo and build from that --
+mainly because they have a separate frontend build step that has to run
+*before* the Build Service build (see their docs). This app has no such
+step, and `toolforge build start` accepts any git URL directly (confirmed
+live: `toolforge build start https://github.com/dungodung/srwiki --ref main`
+built successfully), so there's no GitLab mirror here at all -- Build
+Service pulls straight from GitHub.
+
+This app needs the webservice's **NFS mount kept on** (`--mount=all`, not
+`--mount=none`): it reads `/data/project/srwiki/replica.my.cnf` for
+wikireplica credentials, and it serves
+`/data/project/srwiki/public_html/brojclanaka` live at `/brojclanaka` -- a
+file the unrelated, still-running `brcl` Toolforge job appends to every
+night. Never copy that file into the repo; it must stay read live off NFS
+or `/brojclanaka` goes stale the day after every deploy.
 
 The srwiki Toolforge tool already exists (this is a rewrite, not a new
 tool), so skip `toolforge tools create`.
-
-## One-time setup
-
-1. **Create the GitLab repo** at
-   `gitlab.wikimedia.org/toolforge-repos/srwiki` (via the Toolforge tool
-   dashboard, which provisions this automatically) and add it as a remote.
-
-## The `deploy` branch
-
-This app has no separate frontend build step (server-rendered Flask/Jinja
-only), so `.gitlab-ci.yml` just fast-forwards `main` onto `deploy` on every
-push -- that branch is what Toolforge actually builds from. To do this
-manually instead of relying on CI:
-```
-git checkout -B deploy
-git push origin deploy -f
-```
 
 ## Deploying / redeploying
 
@@ -40,17 +29,16 @@ git push origin deploy -f
 become srwiki
 
 # build & start (first time)
-toolforge build start https://gitlab.wikimedia.org/toolforge-repos/srwiki --ref deploy
-toolforge build show   # wait for "ok (Succeeded)"
+toolforge build start https://github.com/dungodung/srwiki --ref main
+toolforge build show   # wait for "ok"
 toolforge webservice buildservice start --mount=all
 
 # stop the old python2 webservice first if it's still running
 toolforge webservice python2 stop
 ```
 
-Redeploy after a code change: push `main`, let CI (or the manual steps
-above) update `deploy`, then re-run `toolforge build start` +
-`toolforge webservice buildservice restart`.
+Redeploy after a code change: push `main` on GitHub, then re-run
+`toolforge build start` + `toolforge webservice buildservice restart`.
 
 ## Verify
 
