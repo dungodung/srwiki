@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}List of srwiki tools{% endblock %}
+{% block body %}
+<h3>List of <span title="Dungodung">Filip</span>'s srwiki tools</h3>
+<ul>
+<li><a href="{{ url_for('main.portali') }}">Portali</a></li>
+<li><a href="{{ url_for('main.plakete') }}">Plakete</a></li>
+<li><a href="{{ url_for('main.catuse') }}">Upotreba slika iz kategorije</a></li>
+<li><a href="{{ url_for('main.takmicenja') }}">Takmičenja</a></li>
+</ul>
+{% endblock %}

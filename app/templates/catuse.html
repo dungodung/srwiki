@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Kategorije{% endblock %}
+{% block body %}
+<h4>Ova alatka izlistava sve upotrebe na svim Vikimedijinim vikijima svih fajlova iz zadate kategorije na Ostavi.</h4>
+<p/>
+<form action="{{ url_for('main.catuse') }}" method="GET" name="catuseform">
+<table border="0">
+<tr><td style="text-align: right;" class="form">Kategorija: </td><td class="form"><input type="text" name="category" value="{{ category }}"/></td>
+<td style="text-align: left;" class="form"><input type="submit" value="Pošalji"/></td></tr>
+</table>
+</form>
+<p/>
+{% if groups %}
+<table><tr><th>Datoteka</th><th>Upotreba</th></tr>
+{% for file_title, file_url, uses in groups %}
+<tr><td><a href="{{ file_url }}">{{ file_title }}</a></td><td><table>
+{% for use_url, use_title in uses %}
+<tr><td><a href="{{ use_url }}">{{ use_title }}</a></td></tr>
+{% endfor %}
+</table></td></tr>
+{% endfor %}
+</table>
+{% endif %}
+{% endblock %}

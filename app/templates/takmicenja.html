@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Takmičenja na Vikipediji{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='the-datepicker.css') }}" />
+<script src="{{ url_for('static', filename='the-datepicker.min.js') }}" defer></script>
+{% endblock %}
+{% block body %}
+<form action="{{ url_for('main.takmicenja') }}" method="GET" name="takmicenjaform">
+<table border="0" style="margin-left: auto; margin-right: auto;">
+<tr><td style="text-align: right;" class="form">Takmičenje: </td><td class="form"><input type="text" name="takmicenje" value="{{ takmicenje }}"/></td></tr>
+<tr><td style="text-align: right;" class="form">Početak: </td><td class="form"><input type="text" id="pocetak" name="pocetak" value="{{ pocetak }}"/></td></tr>
+<tr><td style="text-align: right;" class="form">Kraj: </td><td class="form"><input type="text" id="kraj" name="kraj" value="{{ kraj }}"/></td></tr>
+<tr><td class="form"></td><td style="text-align: left;" class="form"><input type="submit" value="Generiši"/></td></tr>
+</table>
+</form>
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		var pocetak = document.getElementById('pocetak');
+		var kraj = document.getElementById('kraj');
+		var dpP = new TheDatepicker.Datepicker(pocetak);
+		var dpK = new TheDatepicker.Datepicker(kraj);
+		dpP.options.setInputFormat("d.m.Y.");
+		dpK.options.setInputFormat("d.m.Y.");
+		dpP.render();
+		dpK.render();
+	});
+</script>
+{% if groups %}
+{% for user_url, user_name, rows in groups %}
+<h2><a href="{{ user_url }}">{{ user_name }}</a></h2>
+<table><tr><th>Članak</th><th>Broj bajtova</th></tr>
+{% for art_url, art_name, bytes_ in rows %}
+<tr><td><a href="{{ art_url }}">{{ art_name }}</a></td><td>{{ bytes_ }}</td></tr>
+{% endfor %}
+</table><br />
+{% endfor %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Portali{% endblock %}
+{% block body %}
+<form action="{{ url_for('main.portali') }}" method="GET" name="plaketeform">
+<table border="0" style="margin-left: auto; margin-right: auto;">
+<tr><td style="text-align: right;" class="form">Portal: </td><td class="form"><input type="text" name="portal" value="{{ portal }}"/></td>
+<td style="text-align: left;" class="form"><input type="submit" value="Pošalji"/></td></tr>
+</table>
+</form>
+<h4 style="text-align: center;">{{ poruka|safe }}</h4>
+{% endblock %}

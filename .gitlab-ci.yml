@@ -1,0 +1,18 @@
+# Mirrors `main` onto `deploy` on every push -- that's the branch Toolforge
+# Build Service actually builds from (see docs/deployment-toolforge.md).
+# Unlike wikiwhiz/duga, this app has no separate frontend build step (pure
+# server-rendered Flask/Jinja), so `deploy` is just `main`, fast-forwarded.
+stages:
+  - build-deploy-branch
+
+build-deploy-branch:
+  stage: build-deploy-branch
+  image: alpine:latest
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - apk add --no-cache git
+    - git config user.email "ci@srwiki.toolforge.org"
+    - git config user.name "srwiki CI"
+    - git checkout -B deploy
+    - git push "https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_PATH}.git" HEAD:deploy -f

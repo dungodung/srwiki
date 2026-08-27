@@ -1,0 +1,40 @@
+body {
+    background: White;
+    color: Black;
+    margin: 10px;
+    padding: 0;
+}
+a:visited {
+    color: #999999;
+    background: transparent;
+    text-decoration: none;
+    margin:auto;
+    border-bottom: dashed 1px #999999; 
+}
+a {
+    color: #555555;
+    background: transparent;
+    text-decoration: none;
+    margin:auto;
+    border-bottom: dashed 1px #555555; 
+}
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+    margin: auto;
+}
+table { border: none; }
+td.form { border: none; }
+th.form { border: none; }
+td { border: dotted 1px #cccccc; }
+th {
+    background: #dddddd;
+    border: dotted 1px #cccccc;
+}
+.worrying{
+    color: #FF4444;
+    background: #FFFFDD;
+}
+.critical{
+    color: #FF2222;
+    background: #FFFFAA;
+}
