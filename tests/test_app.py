@@ -16,11 +16,11 @@ def client(tmp_path):
     return app.test_client()
 
 
-def test_home_lists_all_four_tools(client):
+def test_home_lists_all_tools(client):
     resp = client.get("/")
     assert resp.status_code == 200
     body = resp.get_data(as_text=True)
-    for path in ("/portali", "/plakete", "/catuse", "/takmicenja"):
+    for path in ("/portali", "/plakete", "/catuse", "/takmicenja", "/masovne-izmene"):
         assert path in body
 
 
@@ -46,6 +46,18 @@ def test_takmicenja_blank_form_does_not_touch_db(client):
     resp = client.get("/takmicenja")
     assert resp.status_code == 200
     assert "Takmičenje" in resp.get_data(as_text=True)
+
+
+def test_masovne_izmene_blank_form_does_not_touch_db(client):
+    resp = client.get("/masovne-izmene")
+    assert resp.status_code == 200
+    assert "Početak" in resp.get_data(as_text=True)
+
+
+def test_masovne_izmene_rejects_bad_datetime(client):
+    resp = client.get("/masovne-izmene?start=not-a-date")
+    assert resp.status_code == 200
+    assert "Neispravan format" in resp.get_data(as_text=True)
 
 
 def test_brojclanaka_serves_live_file_content(client):

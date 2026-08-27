@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Masovne izmene{% endblock %}
+{% block body %}
+<h4 style="text-align: center;">
+Nalazi registrovane korisnike (bez bot/user-bot statusa) sa {{ threshold }} ili više izmena
+u periodu od 24 časa počevši od izabranog trenutka.
+</h4>
+<form action="{{ url_for('main.masovne_izmene') }}" method="GET" name="masovneizmeneform">
+<table border="0" style="margin-left: auto; margin-right: auto;">
+<tr><td style="text-align: right;" class="form">Početak: </td><td class="form"><input type="datetime-local" name="start" value="{{ start }}"/></td>
+<td style="text-align: left;" class="form"><input type="submit" value="Pošalji"/></td></tr>
+</table>
+</form>
+{% if error %}
+<h4 style="text-align: center;">{{ error }}</h4>
+{% elif results is not none %}
+<h4 style="text-align: center;">
+Period: {{ window_start }} &ndash; {{ window_end }}
+</h4>
+{% if results %}
+<table><tr><th>Korisnik</th><th>Broj izmena</th></tr>
+{% for username, count in results %}
+<tr><td><a href="https://sr.wikipedia.org/wiki/Специјалне:Доприноси/{{ username }}">{{ username }}</a></td><td>{{ count }}</td></tr>
+{% endfor %}
+</table>
+{% else %}
+<h4 style="text-align: center;">Nema korisnika koji ispunjavaju uslov u zadatom periodu.</h4>
+{% endif %}
+{% endif %}
+{% endblock %}

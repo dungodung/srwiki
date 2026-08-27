@@ -1,9 +1,11 @@
+import datetime
 import itertools
 import os
 
 from flask import Blueprint, Response, current_app, redirect, render_template, request, url_for
 
 from ...tools import catuse as catuse_tool
+from ...tools import masovne_izmene as masovne_izmene_tool
 from ...tools import plakete as plakete_tool
 from ...tools import portali as portali_tool
 from ...tools import takmicenja as takmicenja_tool
@@ -135,6 +137,38 @@ def takmicenja():
 
     return render_template(
         "takmicenja.html", takmicenje=takmicenje, pocetak=pocetak, kraj=kraj, groups=groups
+    )
+
+
+# --- Masovne izmene (mass non-bot edit detector) ---------------------------
+
+@main_bp.get("/masovne-izmene")
+def masovne_izmene():
+    start = request.args.get("start", "")
+
+    results = None
+    error = None
+    window_start = window_end = ""
+    if start:
+        try:
+            start_dt = masovne_izmene_tool.parse_start(start)
+        except ValueError:
+            error = "Neispravan format datuma/vremena."
+        else:
+            db_host = current_app.config["SRWIKI_DB_HOST"]
+            results = masovne_izmene_tool.mass_editors(start_dt, db_host)
+            window_end_dt = start_dt + datetime.timedelta(hours=masovne_izmene_tool.WINDOW_HOURS)
+            window_start = start_dt.strftime("%d.%m.%Y. %H:%M")
+            window_end = window_end_dt.strftime("%d.%m.%Y. %H:%M")
+
+    return render_template(
+        "masovne_izmene.html",
+        start=start,
+        results=results,
+        error=error,
+        window_start=window_start,
+        window_end=window_end,
+        threshold=masovne_izmene_tool.EDIT_THRESHOLD,
     )
 
 
