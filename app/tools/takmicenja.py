@@ -73,4 +73,13 @@ def leaderboard(takmicenje: str, pocetak: str, kraj: str, db_host: str):
     with db.connect(db_host, db="srwiki_p") as conn:
         with conn.cursor() as cur:
             cur.execute(sql)
-            return [db.decode_row(row) for row in cur.fetchall()]
+            # broj_bajtova (byte count) comes back as a Decimal, not an int
+            # -- MySQL infers a decimal type for SUM(diff) here because
+            # `diff` is computed via user variables (@a, @kor_cl), which
+            # carry no fixed type of their own. str(Decimal("123.0")) is
+            # literally "123.0", which is what was rendering -- bytes are
+            # always whole numbers, so round-trip it through int().
+            return [
+                (*db.decode_row(row[:2]), int(row[2]))
+                for row in cur.fetchall()
+            ]

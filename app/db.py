@@ -50,6 +50,15 @@ def connect(host, db=None):
         charset="utf8mb4",
         cursorclass=pymysql.cursors.Cursor,
         connect_timeout=10,
-        read_timeout=15,
-        write_timeout=15,
+        # plakete's edit-count query joins revision to page to filter by
+        # namespace, and for a heavy editor MySQL pays that per-row (a
+        # nested-loop page lookup per matching revision, not a bulk scan) --
+        # confirmed live: 44s+ for a ~120k-edit account on srwiki_p, well
+        # past a short timeout, which is what was actually behind plakete's
+        # 500s (a `Lost connection ... (timed out)` from pymysql, not a
+        # logic bug). Unlike rightstool's all-wikis sweeps, srwiki only ever
+        # queries one wiki per request, so a longer timeout here just makes
+        # this one request take longer, it doesn't compound.
+        read_timeout=60,
+        write_timeout=60,
     )
