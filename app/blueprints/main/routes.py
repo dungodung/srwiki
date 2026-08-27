@@ -161,9 +161,15 @@ def masovne_izmene():
             window_start = start_dt.strftime("%d.%m.%Y. %H:%M")
             window_end = window_end_dt.strftime("%d.%m.%Y. %H:%M")
 
+    # An empty field defaults to today at midnight rather than a blank
+    # "--:--" placeholder -- the field is pre-filled for convenience only,
+    # not treated as if the user had actually submitted it (the query
+    # above only runs when `start` was genuinely present in the request).
+    displayed_start = start or datetime.datetime.now().strftime("%Y-%m-%dT00:00")
+
     return render_template(
         "masovne_izmene.html",
-        start=start,
+        start=displayed_start,
         results=results,
         error=error,
         window_start=window_start,

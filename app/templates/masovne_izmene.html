@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 {% block title %}Masovne izmene{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='flatpickr.min.css') }}" />
+<script src="{{ url_for('static', filename='flatpickr.min.js') }}" defer></script>
+{% endblock %}
 {% block body %}
 <h4 style="text-align: center;">
 Nalazi registrovane korisnike (bez bot/user-bot statusa) sa {{ threshold }} ili više izmena
@@ -7,10 +11,21 @@ u periodu od 24 časa počevši od izabranog trenutka.
 </h4>
 <form action="{{ url_for('main.masovne_izmene') }}" method="GET" name="masovneizmeneform">
 <table border="0" style="margin-left: auto; margin-right: auto;">
-<tr><td style="text-align: right;" class="form">Početak: </td><td class="form"><input type="datetime-local" name="start" value="{{ start }}"/></td>
+<tr><td style="text-align: right;" class="form">Početak: </td><td class="form"><input type="text" id="start" name="start" value="{{ start }}" autocomplete="off"/></td>
 <td style="text-align: left;" class="form"><input type="submit" value="Pošalji"/></td></tr>
 </table>
 </form>
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		flatpickr('#start', {
+			enableTime: true,
+			time_24hr: true,
+			dateFormat: 'Y-m-d\\TH:i',
+			defaultHour: 0,
+			defaultMinute: 0,
+		});
+	});
+</script>
 {% if error %}
 <h4 style="text-align: center;">{{ error }}</h4>
 {% elif results is not none %}
