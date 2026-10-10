@@ -148,6 +148,7 @@ def masovne_izmene():
 
     results = None
     error = None
+    warning = None
     window_start = window_end = ""
     if start:
         try:
@@ -160,6 +161,14 @@ def masovne_izmene():
             window_end_dt = start_dt + datetime.timedelta(hours=masovne_izmene_tool.WINDOW_HOURS)
             window_start = start_dt.strftime("%d.%m.%Y. %H:%M")
             window_end = window_end_dt.strftime("%d.%m.%Y. %H:%M")
+            oldest = masovne_izmene_tool.oldest_available(db_host)
+            if oldest and start_dt < oldest:
+                warning = (
+                    "Podaci o izmenama pre "
+                    f"{oldest.strftime('%d.%m.%Y. %H:%M')} više nisu dostupni "
+                    "(čuvaju se oko 30 dana), pa rezultati za ovaj period "
+                    "nisu potpuni."
+                )
 
     # An empty field defaults to today at midnight rather than a blank
     # "--:--" placeholder -- the field is pre-filled for convenience only,
@@ -172,6 +181,7 @@ def masovne_izmene():
         start=displayed_start,
         results=results,
         error=error,
+        warning=warning,
         window_start=window_start,
         window_end=window_end,
         threshold=masovne_izmene_tool.EDIT_THRESHOLD,

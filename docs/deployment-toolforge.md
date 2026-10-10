@@ -40,6 +40,24 @@ toolforge webservice python2 stop
 Redeploy after a code change: push `main` on GitHub, then re-run
 `toolforge build start` + `toolforge webservice buildservice restart`.
 
+## Mass-edit alert job (`check-mass-edits`)
+
+An hourly Toolforge job (`0 * * * *`) that emails the maintainer when a
+non-bot user crosses the mass-edit threshold in the trailing 24h. It's
+standalone -- it doesn't run from the Build Service image but from a copy
+of `cron/check_mass_edits.py` in `~/cron/` on the tool account, with its
+own venv (`~/cron/venv`, deps in `cron/requirements.txt`). The repo copy
+is the source of truth; after changing it, copy it over:
+
+```
+scp cron/check_mass_edits.py dungodung@login.toolforge.org:/tmp/
+become srwiki
+cp /tmp/check_mass_edits.py ~/cron/check_mass_edits.py
+```
+
+The job picks up the new file on its next run (no recreate needed, since
+it just runs `~/cron/venv/bin/python ~/cron/check_mass_edits.py`).
+
 ## Verify
 
 - `https://srwiki.toolforge.org/` loads the tool list.
