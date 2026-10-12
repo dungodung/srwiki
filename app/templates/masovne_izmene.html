@@ -40,7 +40,7 @@ Period: {{ window_start }} &ndash; {{ window_end }}
 {% if results %}
 <table><tr><th>Korisnik</th><th>Broj izmena</th></tr>
 {% for username, count in results %}
-<tr><td><a href="https://sr.wikipedia.org/wiki/Специјалне:Доприноси/{{ username }}">{{ username }}</a></td><td>{{ count }}</td></tr>
+<tr><td><a href="https://sr.wikipedia.org/wiki/Посебно:Доприноси/{{ username }}">{{ username }}</a></td><td>{{ count }}</td></tr>
 {% endfor %}
 </table>
 {% else %}

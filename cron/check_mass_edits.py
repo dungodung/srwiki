@@ -106,7 +106,7 @@ def send_violator_email(violators, window_start: datetime.datetime, window_end: 
     ]
     for username, count in violators:
         lines.append(f"• {username} — {count} измена")
-        lines.append(f"  Доприноси: https://sr.wikipedia.org/wiki/Служба:Доприноси/{username}")
+        lines.append(f"  Доприноси: https://sr.wikipedia.org/wiki/Посебно:Доприноси/{username}")
     lines.append("")
     lines.append(f"Пун преглед за овај период: {TOOL_URL}?start={window_start.strftime('%Y-%m-%dT%H:%M')}")
 
